@@ -20,7 +20,9 @@ memory.
 
 ## What it measures
 
-- **Tempo and beats** using librosa's beat tracker
+- **Tempo and beats** using librosa's beat tracker, with half and double
+  time candidates reported, since slow cues are often detected at double
+  tempo
 - **Meter** (3 vs 4 beats per bar), estimated by combining onset
   strength and harmonic change on each beat and testing which grouping
   makes downbeats stand out most
@@ -62,7 +64,7 @@ using a written annotation rule (see `notes.md`).
 | Cue | Style | Tempo (true / detected) | Key | Boundaries found |
 |---|---|---|---|---|
 | 1 | Synth and orchestral, D minor | 90 / 89.1 | Correct | 2 of 3 |
-| 2 | Slow, C major | 60 / 123 | Correct | 3 of 5 |
+| 2 | Slow, C major | 60 / 123 (half time: 61.5) | Correct | 3 of 5 |
 | 3 | Tabla driven, B♭ major | 80 / 107.7 | Correct | 4 of 4 |
 
 **Total: 9 of 12 boundaries within 3 seconds. Key correct on all
@@ -77,10 +79,10 @@ three cues.**
 - **The beat tracker correctly found where the pulse ends.** In cue 1
   it stopped detecting beats exactly where the cue drops into an
   unmetered tail.
-- **Tempo errors follow simple ratios.** Cue 2 was doubled (60 to 123).
-  Cue 3 came out at roughly 4:3 of the true tempo because the beat
-  tracker, built around Western pulse conventions, locked onto
-  subdivisions in a tabla pattern.
+- **Tempo errors follow simple ratios.** Cue 2 was doubled (60 to 123),
+  which the half time candidate recovers. Cue 3 came out at roughly 4:3
+  of the true tempo because the beat tracker, built around Western
+  pulse conventions, locked onto subdivisions in a tabla pattern.
 - **The 89.1 vs 90 BPM difference is frame resolution, not error.**
   At a 512 sample hop and 22050 Hz, no whole number of frames per
   beat equals exactly 90 BPM.
@@ -92,7 +94,8 @@ three cues.**
 - The 8 second window can't detect boundaries in the first or last
   8 seconds, or two boundaries closer than 8 seconds apart
 - Parameters were first tuned on one cue and tested on only three
-- Tempo and meter estimation assume Western pulse conventions
+- Tempo and meter estimation assume Western pulse conventions, and
+  ratio errors other than half or double (like cue 3) aren't caught
 - Meter testing only separates 3 from 4, and can't determine the
   bottom number of a time signature
 

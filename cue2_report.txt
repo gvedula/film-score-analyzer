@@ -1,6 +1,6 @@
 File: cue2.wav
 Duration: 61.3 s
-Tempo: 123.0 BPM (104 beats detected)
+Tempo: 123.0 BPM (104 beats detected), half/double: 61.5 / 246.1
 Meter: 4 beats per bar
 Meter scores: 3: 0.14, 4: 0.53
 Key: C major (confidence 0.88)

@@ -1,6 +1,6 @@
 File: cue3.wav
 Duration: 82.2 s
-Tempo: 107.7 BPM (69 beats detected)
+Tempo: 107.7 BPM (69 beats detected), half/double: 53.8 / 215.3
 Meter: 4 beats per bar
 Meter scores: 3: 0.13, 4: 0.42
 Key: A# major (confidence 0.93)

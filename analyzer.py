@@ -101,7 +101,7 @@ peak_times = librosa.frames_to_time(top_frames, sr=sr)
 lines = [
     f"File: {audio_path}",
     f"Duration: {duration:.1f} s",
-    f"Tempo: {bpm:.1f} BPM ({len(beat_times)} beats detected)",
+    f"Tempo: {bpm:.1f} BPM ({len(beat_times)} beats detected), half/double: {bpm/2:.1f} / {bpm*2:.1f}",
     f"Meter: {meter_text}",
     f"Meter scores: " + ", ".join(f"{k}: {v:.2f}" for k, v in meter_scores.items()),
     f"Key: {best_key} (confidence {best_score:.2f})",
