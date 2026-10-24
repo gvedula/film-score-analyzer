@@ -156,3 +156,30 @@
 - Detect which sections are rhythmically driven vs free
 - Smaller hop length for finer tempo resolution
 - Correct tempo octave errors using a prior on film tempos
+---
+
+# Cue 3 (B♭ major, 80 BPM, 4/4, ~82s, tabla driven)
+
+## Tempo and meter
+- Tempo: 107.7 BPM vs actual 80. Ratio of roughly 4:3, not the usual
+  2:1 octave error. Cue is built on an Indian tabla pattern with dense
+  triplet subdivisions. The tracker locked onto a grouping within the
+  subdivisions instead of the 80 BPM pulse
+- Only 69 beats detected in 82s, so tracking dropped out for long
+  stretches where the pattern was dense or syncopated
+- Meter reported 4 beats per bar, matching 4/4, but it's measured on
+  the wrong pulse, so the match is not meaningful
+- Takeaway: librosa's beat tracker assumes Western pulse conventions
+  and fails on tabla rhythm. A clear limitation for non-Western music
+
+## Key
+- Reported A# major = B♭ major, correct. Confidence 0.93, highest of
+  the three cues. Label uses sharps because the code's note list does
+
+## Boundaries
+- Answer key: 6, 25, 36, 68
+- Result: 4 of 4. 25 (+0.1), 36 (-1.3), 68 (+0.3)
+- 6 matched at 8.0, the earliest frame the 8s window can detect.
+  Counted as a hit, but the tool couldn't have placed it earlier
+- Extra detections not in the key: 16.6, 48.0, 57.7 [fill in: repeats,
+  phrase turnovers, or nothing?]

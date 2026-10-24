@@ -1,0 +1,13 @@
+File: cue3.wav
+Duration: 82.2 s
+Tempo: 107.7 BPM (69 beats detected)
+Meter: 4 beats per bar
+Meter scores: 3: 0.13, 4: 0.42
+Key: A# major (confidence 0.93)
+Detected boundaries (s): 8.0, 16.6, 25.1, 34.7, 48.0, 57.7, 68.3
+Annotated vs detected (3s tolerance):
+  6.0 -> 8.0 (+2.0s) hit
+  25.0 -> 25.1 (+0.1s) hit
+  36.0 -> 34.7 (-1.3s) hit
+  68.0 -> 68.3 (+0.3s) hit
+Found 4 of 4
