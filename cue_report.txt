@@ -8,6 +8,5 @@ Detected boundaries (s): 19.6, 30.8, 45.3, 55.9, 66.0, 76.9, 87.7, 139.6
 Annotated vs detected (3s tolerance):
   33.0 -> 30.8 (-2.2s) hit
   94.0 -> 87.7 (-6.3s) miss
-  104.0 -> 87.7 (-16.3s) miss
   137.0 -> 139.6 (+2.6s) hit
-Found 2 of 4
+Found 2 of 3

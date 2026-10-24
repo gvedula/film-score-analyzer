@@ -1,4 +1,24 @@
-# Validation notes: cue.wav (D minor, 90 BPM, 4/4, ~3:02)
+# Validation notes: Film Score Analyzer
+
+## Annotation rule (applies to all cues)
+- A boundary is the start of a new formal section: new material,
+  texture, or function lasting at least a few bars
+- The start of a repeated section counts (A then A is two sections)
+- Single entrances or short gestures inside a section do not count
+- Transitions are marked where the new section lands, not where
+  the build starts
+- All answer keys come from the DAW session, not memory
+- Rule written after the first runs. Original answer keys are kept
+  below for comparison
+
+## Scorecard (novelty, 8s window, 3s tolerance, revised keys)
+- Cue 1: 2 of 3 (33, 137)
+- Cue 2: 3 of 5 (11, 25, 48)
+- Total: 5 of 8
+
+---
+
+# Cue 1 (D minor, 90 BPM, 4/4, ~3:02)
 
 ## Energy
 - Opening hits at ~3s and ~13s, full entrance at ~33s, dense middle,
@@ -40,7 +60,7 @@
 - Only tests 3 vs 4. Can't separate 2 from 4, and can't determine
   the bottom number of the time signature from audio
 
-## Answer key (from session, not memory)
+## Original answer key (before the rule)
 - 33: main section lands
 - 94: low strings enter
 - 104: beat drop
@@ -48,7 +68,15 @@
 - Memory originally said the main section started at 29; the session
   says 33. Answer keys have to come from the session
 
-## Segmentation (agglomerative, k=5, chroma + MFCC)
+## Revised answer key (rule applied)
+- 33, 94, 137. 104 treated as the peak of the section that starts
+  at 94, not a new section
+- Result: 2 of 3 (33, 137). Same detections as before, only the
+  key changed
+- Miss at 94: nearest peak 87.7 is a phrase turnover, not the
+  string entrance
+
+## Segmentation, agglomerative (k=5, chroma + MFCC), since removed
 - Boundaries: 0.0, 33.6, 98.7, 140.4, 174.7
 - Hit: 33 vs 33.6
 - Transition 94 (low strings) to 104 (beat drop): one boundary at
@@ -57,39 +85,74 @@
 - Near miss: 137 vs 140.4, just outside the standard 3s window
 - Split off the fade at 174.7 as its own section; did not split off
   the silence before the opening hit
-- Limitation: had to be told the number of sections
+- Had to be told the number of sections. Replaced by novelty
+  detection, which doesn't need it
 
 ## Novelty detection, 4s window
-- Missed all section boundaries (33, 94, 104, 137)
+- Missed all section boundaries
 - Found peaks at 55.2, 65.9, 76.5, 87.2, ~10.7s apart
 - 4 bars at 89.1 BPM = 10.8s. Confirmed something changes every
   4 bars in the main section. Detected phrase structure, not sections
 
-## Novelty detection, 8s window
+## Novelty detection, 8s window (current setting)
 - Peaks: 19.6, 30.8, 45.3, 55.9, 66.0, 76.9, 87.7, 139.6
 - Hit: 33 vs 30.8 (weak peak)
 - Hit: 137 vs 139.6, the strongest peak in the cue
-- Missed 94 and 104. Only a weak bump near 97, close to where
-  agglomerative put its boundary (98.7). Two methods agree the
-  features see one mild change there, not two events
+- 94 missed. Only a weak bump near 97, close to where agglomerative
+  put its boundary (98.7). Two methods agree the features see one
+  mild change there, not two events
 - 4 bar phrase peaks persisted at both window sizes
 - 104 to 137 has the lowest novelty in the cue: the climax is the
   most internally consistent section
 - First and last 8s are blind spots, the window can't extend past
   the edges of the file
-- Likely cause of the 104 miss: the beat drop is a rhythmic change,
-  and averaged chroma + MFCC can't see rhythm
+- Likely cause of the weak response near 94 to 104: the beat drop
+  is a rhythmic change, and averaged chroma + MFCC can't see rhythm
 
-## Scorecard (3s tolerance)
-- Agglomerative: 1 of 4 (33)
-- Novelty 8s: 2 of 4 (33, 137)
+---
 
-## Caveat
-- Every parameter so far (2% threshold, 8s window) was tuned on
-  this one cue. Needs testing on other cues before trusting it
+# Cue 2 (C major, 60 BPM, 4/4, ~61s)
 
-## Ideas for later
-- Add a rhythm feature so the beat drop at 104 is detectable
+## Tempo and meter
+- Tempo: 123 BPM, doubled from 60. Classic octave error. 123 is the
+  nearest frame resolution step to 120
+- Meter: 4 beats per bar, correct label, but counting at double
+  speed, so "4 beats" is really 2 real beats. Tempo error carries
+  into meter
+
+## Key
+- C major, correct, confidence 0.88 (higher than cue 1). One D major
+  chord (secondary dominant) didn't affect the estimate
+
+## Original answer key (before the rule)
+- 4, 11, 17, 37, 48 (11 added after the first run, confirmed in
+  session). Result: 2 of 5
+- 4 was a 3 note flute gesture
+
+## Revised answer key (rule applied)
+- 11, 17, 25, 37, 48. Flute at 4 dropped, it's a short gesture
+  inside a section. Repeat at 25 added under the rule, confirmed
+  in session
+- Result: 3 of 5 (11, 25, 48)
+- 17 missed: only 6s after 11, closer than the 8s minimum spacing
+  between detected boundaries, so only one of the two can be found
+- 37 near miss at 33.6 (-3.4s), just outside the 3s window
+- The tool detected the repeat at 24.8 before it was in the key
+
+---
+
+# Findings across cues
+- Tempo is reliable at moderate tempos, doubles slow ones
+- Key estimation correct on both, more confident on diatonic material
+- Novelty detection hears phrases with short windows and sections
+  with longer ones
+- A fixed 8s window is too coarse for short cues with quick section
+  changes. Window should scale with the cue
+- Every parameter (2% threshold, 8s window) was first tuned on cue 1
+
+# Ideas for later
+- Add a rhythm feature so rhythmic changes like beat drops register
+- Scale the novelty window to cue length or tempo
 - Detect which sections are rhythmically driven vs free
 - Smaller hop length for finer tempo resolution
-- Test on 2 to 3 more cues in different styles
+- Correct tempo octave errors using a prior on film tempos
