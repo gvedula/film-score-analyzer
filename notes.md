@@ -36,3 +36,16 @@
 - Detect which sections are rhythmically driven vs free
 - Smaller hop length for finer tempo resolution
 - Test on 2 to 3 more cues in different styles
+## Segmentation (agglomerative, k=5, chroma + MFCC)
+- Answer key taken from the session, not memory. My memory said the
+  main section started at 29; the session says 33. Algorithm said 33.6
+- Hit: 33 vs 33.6
+- Transition 94 (low strings enter) to 104 (beat drop): algorithm put
+  one boundary at 98.7, halfway between. Clustering splits gradual
+  transitions down the middle and misses both edges
+- Near miss: 137 vs 140.4, just outside the standard 3s window
+- Split off the fade at 174.7 as its own section; did not split off
+  the silence before the opening hit
+- Limitation: had to be told the number of sections
+- Next: novelty-based detection, no fixed section count, should find
+  both 94 and 104

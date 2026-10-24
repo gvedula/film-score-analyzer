@@ -25,6 +25,15 @@ print("Beats detected:", len(beat_times))
 # Key and mode
 chroma = librosa.feature.chroma_cqt(y=y, sr=sr)
 chroma_avg = chroma.mean(axis=1)
+# Segmentation
+mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
+n = min(chroma.shape[1], mfcc.shape[1])
+features = np.vstack([chroma[:, :n], mfcc[:, :n]])
+features = (features - features.mean(axis=1, keepdims=True)) / (features.std(axis=1, keepdims=True) + 1e-8)
+
+bounds = librosa.segment.agglomerative(features, 5)
+bound_times = librosa.frames_to_time(bounds, sr=sr)
+print("Section boundaries (s):", [round(float(t), 1) for t in bound_times])
 
 notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 major_profile = np.array([6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88])
@@ -45,10 +54,30 @@ for i in range(12):
 
 print("Estimated key:", best_key)
 print("Confidence:", round(best_score, 2))
+# Meter
+onset_env = librosa.onset.onset_strength(y=y, sr=sr)
+beat_onset = onset_env[beats]
+
+beat_chroma = librosa.util.sync(chroma, beats, aggregate=np.median)[:, 1:]
+chroma_change = np.linalg.norm(np.diff(beat_chroma, axis=1), axis=0)
+chroma_change = np.concatenate([[0], chroma_change])
+
+def standardize(v):
+    return (v - v.mean()) / (v.std() + 1e-8)
+
+accent = standardize(beat_onset) + standardize(chroma_change)
+
+meter_scores = {}
+for m in [3, 4]:
+    meter_scores[m] = max(accent[p::m].mean() for p in range(m))
+
+meter = max(meter_scores, key=meter_scores.get)
+print("Estimated meter:", meter, "beats per bar")
+print("Meter scores:", {k: round(float(v), 2) for k, v in meter_scores.items()})
 
 # Plot (always last)
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 6), sharex=True)
-fig.suptitle(f"Tempo: {round(bpm, 1)} BPM   |   Key: {best_key}   |   Duration: {round(duration, 1)}s", fontsize=13)
+fig.suptitle(f"Tempo: {round(bpm, 1)} BPM   |   Meter: {meter} beats per bar   |   Key: {best_key}   |   Duration: {round(duration, 1)}s", fontsize=13)
 
 ax1.plot(times, rms)
 ax1.vlines(beat_times, 0, rms.max(), color="red", alpha=0.2)
@@ -59,6 +88,9 @@ ax2.plot(times, centroid, color="orange")
 ax2.set_title("Brightness (Spectral Centroid)")
 ax2.set_ylabel("Hz")
 ax2.set_xlabel("Time (seconds)")
+for t in bound_times:
+    ax1.axvline(t, color="black", linestyle="--")
+    ax2.axvline(t, color="black", linestyle="--")
 
 plt.tight_layout()
 plt.savefig("analysis.png")
